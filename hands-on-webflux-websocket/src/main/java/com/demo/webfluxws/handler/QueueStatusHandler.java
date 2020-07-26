@@ -13,6 +13,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,12 +26,13 @@ public class QueueStatusHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession webSocketSession) {
         HandshakeInfo handshakeInfo = webSocketSession.getHandshakeInfo();
+        Optional<String> query = Optional.ofNullable(handshakeInfo.getUri().getQuery());
         MultiMap<String> values = new MultiMap<>();
-        UrlEncoded.decodeTo(handshakeInfo.getUri().getQuery(), values, "UTF-8");
+        UrlEncoded.decodeTo(query.orElse(""), values, "UTF-8");
         String queueId = values.getValue("queueId", 0);
-        if (null == queueId) {
+        if (StringUtils.isEmpty(queueId)) {
             Mono<WebSocketMessage> errorMessage = Mono.just(webSocketSession.textMessage("Missing query parameter 'queueId'."));
-            return webSocketSession.send(errorMessage).then();
+            return webSocketSession.send(errorMessage);
         }
 
         return webSocketSession.send(Flux.create(sink -> queueSubscriber.get(queueId).add(new WebSocketSender(webSocketSession, sink))));
