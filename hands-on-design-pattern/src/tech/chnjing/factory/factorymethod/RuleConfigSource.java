@@ -1,28 +1,23 @@
-package tech.chnjing.factory.simple;
+package tech.chnjing.factory.factorymethod;
 
-import tech.chnjing.factory.RuleConfig;
-import tech.chnjing.factory.RuleConfigParser;
+import tech.chnjing.factory.*;
 
 public class RuleConfigSource {
     /**
-     * 在下面这段代码中，我们根据配置文件的后缀（json、xml、yaml、properties），
-     * 选择不同的解析器（JsonRuleConfigParser、XmlRuleConfigParser……），
-     * 将存储在文件中的配置解析成内存对象 RuleConfig。
-     *
-     * 简单工厂实现
+     * 工厂方法演示
      */
     public RuleConfig load(String ruleConfigFilePath) {
         String ruleConfigFileExtension = getFileExtension(ruleConfigFilePath);
-        RuleConfigParser parser = RuleConfigParserFactory.createParser(ruleConfigFileExtension);
+        RuleConfigParserFactory factory = RuleConfigParserFactoryMap.getParserFactory(ruleConfigFileExtension);
 
-        if (parser == null) {
+        if (factory == null) {
             throw new RuntimeException(
                     "Rule config file format is not supported: " + ruleConfigFilePath);
         }
 
         String configText = "";
         //从ruleConfigFilePath文件中读取配置文本到configText中
-        RuleConfig ruleConfig = parser.parse(configText);
+        RuleConfig ruleConfig = factory.createParser().parse(configText);
         return ruleConfig;
     }
 
@@ -34,6 +29,6 @@ public class RuleConfigSource {
     public static void main(String[] args) {
         RuleConfigSource source = new RuleConfigSource();
 
-        System.out.println("Using simple factory config source: " + source.load("").getSource());
+        System.out.println("Using factory method config source: " + source.load("").getSource());
     }
 }

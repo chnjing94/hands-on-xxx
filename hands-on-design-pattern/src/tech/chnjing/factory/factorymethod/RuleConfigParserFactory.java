@@ -1,4 +1,4 @@
-package tech.chnjing.factory.method;
+package tech.chnjing.factory.factorymethod;
 
 import tech.chnjing.factory.*;
 
