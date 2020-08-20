@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableDubbo(scanBasePackages = "com.demo.action")
+@EnableDubbo
 @ComponentScan(value = {"com.demo.action"})
 public class AnnotationConsumerConfiguration {
         @Bean
